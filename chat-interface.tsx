@@ -18,6 +18,7 @@ import {
   MessageSquareText,
   Trash2,
   PlusCircle,
+  X, // Dodano brakujący import X
 } from "lucide-react"
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -577,7 +578,7 @@ export default function ChatInterface() {
         return 'dark';
       }
     }
-    return 'light';
+    return 'dark'; // ZMIANA: Domyślny fallback na ciemny
   });
   const [chatHistory, setChatHistory] = useState<ChatSession[]>([]);
   const [currentChatId, setCurrentChatId] = useState<string | null>(null);
@@ -1191,7 +1192,7 @@ export default function ChatInterface() {
       <div key={message.id} className={cn("flex flex-col mb-2", message.type === "user" ? "items-end" : "items-start")}>
         <div
           className={cn(
-            "message-bubble",
+            "message-bubble", // Styl tej klasy (np. padding, border-radius) powinien być zdefiniowany gdzieś indziej
             message.type === "user"
               ? "user bg-blue-600 dark:bg-blue-700 text-white"
               : "system bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100",
@@ -1215,7 +1216,11 @@ export default function ChatInterface() {
             </>
           ) : (
             <div className={cn({ "animate-fade-in": isCompleted && message.id !== streamingMessageId && !stopStreamingRef.current })}>
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              <ReactMarkdown remarkPlugins={[remarkGfm]}
+                components={{ // Dodatkowa konfiguracja dla ReactMarkdown, aby linki otwierały się w nowej karcie
+                  a: ({node, ...props}) => <a {...props} target="_blank" rel="noopener noreferrer" />
+                }}
+              >
                 {message.content}
               </ReactMarkdown>
             </div>
@@ -1389,7 +1394,7 @@ export default function ChatInterface() {
                   <button
                     type="button"
                     onClick={() => handleRemoveFile(file.id)}
-                    className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-0.5 hover:bg-red-600 transition-colors"
+                    className="absolute -top-1 -right-1 bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white rounded-full p-0.5 transition-colors"
                     aria-label={`Remove ${file.name}`}
                   >
                     <XCircle size={16} strokeWidth={2.5} />
