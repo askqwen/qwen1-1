@@ -838,15 +838,18 @@ export default function ChatInterface() {
 
   const renderMessage = (message: Message) => {
     const isCompleted = completedMessages.has(message.id) || message.completed;
+    // UWAGA: Poniższe klasy Tailwind dla wiadomości użytkownika (`bg-blue-500 text-white` dla trybu jasnego)
+    // mogą być nadpisywane przez bardziej specyficzne reguły CSS w Twoim projekcie (np. w global.css).
+    // Jeśli wiadomości użytkownika nie mają niebieskiego tła, sprawdź globalne style dla klas `.message-bubble.user` lub `.user`.
     return (
       <div key={message.id} className={cn("flex flex-col mb-2", message.type === "user" ? "items-end" : "items-start")}>
         <div
           className={cn(
             "message-bubble",
-            "px-4 py-2 rounded-lg shadow-sm max-w-[85%] break-words", // Common styles
+            "px-4 py-2 rounded-lg shadow-sm max-w-[85%] break-words", // Wspólne style
             message.type === "user"
-              ? "user bg-blue-500 text-white dark:bg-blue-600 dark:text-neutral-50" // User message styles
-              : "system bg-gray-100 text-gray-800 dark:bg-neutral-700 dark:text-neutral-100" // Assistant message styles
+              ? "user bg-blue-500 text-white dark:bg-blue-700 dark:text-neutral-50" // Style wiadomości użytkownika
+              : "system bg-gray-100 text-gray-800 dark:bg-neutral-700 dark:text-neutral-100" // Style wiadomości asystenta
           )}
         >
           {message.type === "user" ? (
@@ -860,7 +863,7 @@ export default function ChatInterface() {
               {message.attachments && message.attachments.length > 0 && currentModel.supportsImages && (
                 <div className="mt-2 flex flex-wrap gap-2">
                   {message.attachments.map(att => (
-                    <img key={att.id} src={att.dataUrl} alt={att.name} className="h-20 w-20 object-cover rounded-md border border-gray-200 dark:border-neutral-700" />
+                    <img key={att.id} src={att.dataUrl} alt={att.name} className="h-20 w-20 object-cover rounded-md border border-gray-200 dark:border-neutral-600" />
                   ))}
                 </div>
               )}
@@ -918,10 +921,10 @@ export default function ChatInterface() {
   return (
     <div
       ref={mainContainerRef}
-      className="bg-gray-50 dark:bg-neutral-900 flex flex-col overflow-hidden"
+      className="bg-gray-50 dark:bg-neutral-900 flex flex-col overflow-hidden" // Tło głównego kontenera
       style={{ height: isMobile ? `${viewportHeight}px` : "100svh" }}
     >
-      <header className="fixed top-0 left-0 right-0 h-12 flex items-center px-4 z-20 bg-gray-50 dark:bg-neutral-900 app-header border-b border-gray-200 dark:border-neutral-800">
+      <header className="fixed top-0 left-0 right-0 h-12 flex items-center px-4 z-20 bg-gray-50 dark:bg-neutral-800 app-header border-b border-gray-200 dark:border-neutral-700"> {/* Nagłówek */}
         <div className="w-full flex items-center justify-between px-2">
           <button className="header-button p-2 rounded-md hover:bg-gray-200 dark:hover:bg-neutral-700" aria-label="Menu">
             <Menu className="h-5 w-5 text-gray-700 dark:text-neutral-300" />
@@ -944,7 +947,7 @@ export default function ChatInterface() {
             <div
               id="model-selection-panel"
               className={cn(
-                "absolute right-0 z-30 mt-2 w-60 origin-top-right rounded-lg bg-white dark:bg-neutral-800 p-1 shadow-xl ring-1 ring-black ring-opacity-5 dark:ring-neutral-700 focus:outline-none",
+                "absolute right-0 z-30 mt-2 w-60 origin-top-right rounded-lg bg-white dark:bg-neutral-800 p-1 shadow-xl ring-1 ring-black/5 dark:ring-white/10 focus:outline-none", // Poprawiony ring dla dark mode
                 "transform transition-all ease-out",
                 isModelDropdownOpen
                   ? "opacity-100 scale-100 duration-100"
@@ -983,7 +986,7 @@ export default function ChatInterface() {
         </div>
       </header>
 
-      <div ref={chatContainerRef} className="flex-grow pb-32 pt-12 px-4 overflow-y-auto">
+      <div ref={chatContainerRef} className="flex-grow pb-32 pt-12 px-4 overflow-y-auto"> {/* Kontener czatu */}
         <div className="max-w-3xl mx-auto space-y-4">
           {messageSections.map((section, sectionIndex) => (
             <div
@@ -1013,10 +1016,10 @@ export default function ChatInterface() {
         disabled={!currentModel.supportsImages || isStreaming}
       />
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gray-50 dark:bg-neutral-900 input-area-fixed border-t border-gray-200 dark:border-neutral-800">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gray-50 dark:bg-neutral-800 input-area-fixed border-t border-gray-200 dark:border-neutral-700"> {/* Obszar wprowadzania */}
         <form onSubmit={!isStreaming ? handleSubmit : (e) => e.preventDefault()} className="max-w-3xl mx-auto">
           {filePreviews.length > 0 && currentModel.supportsImages && (
-            <div className="mb-2 p-2 border border-gray-200 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-800 flex flex-wrap gap-2 items-center overflow-x-auto">
+            <div className="mb-2 p-2 border border-gray-200 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-700/50 flex flex-wrap gap-2 items-center overflow-x-auto"> {/* Podgląd plików */}
               {filePreviews.map((file) => (
                 <div key={file.id} className="relative flex-shrink-0">
                   <img src={file.dataUrl} alt={file.name} className="h-16 w-16 object-cover rounded-md border border-gray-300 dark:border-neutral-600" />
@@ -1035,20 +1038,20 @@ export default function ChatInterface() {
           <div
             ref={inputContainerRef}
             className={cn(
-              "chat-input-textarea-wrapper relative bg-white dark:bg-neutral-800 rounded-xl shadow-sm border border-gray-300 dark:border-neutral-700 focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-500",
+              "chat-input-textarea-wrapper relative bg-white dark:bg-neutral-700 rounded-xl shadow-sm border border-gray-300 dark:border-neutral-600 focus-within:ring-2 focus-within:ring-blue-500 dark:focus-within:ring-blue-500", // Wrapper pola tekstowego
               {"streaming": isStreaming}
             )}
             onClick={handleInputContainerClick}
           >
-            <div className="pb-9 px-3 pt-3"> {/* Added padding to match textarea positioning */}
+            <div className="pb-9 px-3 pt-3">
               <textarea
                 ref={textareaRef}
                 placeholder={isStreaming ? "Generating response..." : `Ask ${currentModel.name}...`}
                 className={cn(
                   "chat-input-textarea",
                   "block w-full resize-none border-0 bg-transparent p-0 focus:ring-0",
-                  "text-gray-900 dark:text-neutral-100",
-                  "placeholder-gray-500 dark:placeholder-neutral-400"
+                  "text-gray-900 dark:text-neutral-100", // Kolor tekstu
+                  "placeholder-gray-500 dark:placeholder-neutral-400" // Kolor placeholdera
                 )}
                 value={inputValue}
                 onChange={handleInputChange}
@@ -1070,7 +1073,7 @@ export default function ChatInterface() {
                 <div className="flex items-center space-x-2">
                   <button
                     type="button"
-                    className="action-button icon p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-neutral-700 transition-colors"
+                    className="action-button icon p-1.5 rounded-full hover:bg-gray-200 dark:hover:bg-neutral-600 transition-colors" // Przycisk plus
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isStreaming || !currentModel.supportsImages}
                     aria-label={currentModel.supportsImages ? "Add attachment" : `${currentModel.name} does not support attachments`}
@@ -1083,21 +1086,21 @@ export default function ChatInterface() {
                   type={isStreaming ? "button" : "submit"}
                   onClick={isStreaming ? handleStopGeneration : undefined}
                   className={cn(
-                    "submit-button flex items-center justify-center h-8 w-8 rounded-full transition-colors",
+                    "submit-button flex items-center justify-center h-8 w-8 rounded-full transition-colors", // Przycisk wysyłania/stop
                     (isStreaming || hasTyped || (filePreviews.length > 0 && currentModel.supportsImages) )
                       ? "submit-button-active bg-blue-600 hover:bg-blue-700 text-white dark:bg-blue-500 dark:hover:bg-blue-400"
-                      : "submit-button-inactive bg-gray-200 text-gray-400 dark:bg-neutral-700 dark:text-neutral-500 cursor-not-allowed"
+                      : "submit-button-inactive bg-gray-200 text-gray-400 dark:bg-neutral-600 dark:text-neutral-500 cursor-not-allowed"
                   )}
                   disabled={!isStreaming && (!inputValue.trim() && !(filePreviews.length > 0 && currentModel.supportsImages))}
                   aria-label={isStreaming ? "Stop generating response" : "Send message"}
                 >
                   {isStreaming ? (
                     <Square
-                      className="lucide-icon h-3 w-3" // size controlled by h-3 w-3
-                      fill="currentColor" // uses text color from parent
+                      className="lucide-icon h-3 w-3"
+                      fill="currentColor"
                     />
                   ) : (
-                    <ArrowUp className="lucide-icon h-5 w-5" /> // uses text color from parent
+                    <ArrowUp className="lucide-icon h-5 w-5" />
                   )}
                 </button>
               </div>
